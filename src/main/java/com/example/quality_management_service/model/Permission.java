@@ -1,4 +1,4 @@
-package com.example.quality_management_service.management.model;
+package com.example.quality_management_service.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -43,4 +43,8 @@ public class Permission {
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     public Set<Role> getRoles() { return roles; }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 }
