@@ -1,4 +1,4 @@
-package com.example.quality_management_service.management.model;
+package com.example.quality_management_service.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
