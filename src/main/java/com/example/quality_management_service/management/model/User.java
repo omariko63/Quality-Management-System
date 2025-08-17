@@ -1,6 +1,8 @@
 package com.example.quality_management_service.management.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,6 +16,7 @@ public class User {
     private String username;
 
     @Column(nullable = false, unique = true)
+    @Email
     private String email;
 
     @Column(name = "password", nullable = false)

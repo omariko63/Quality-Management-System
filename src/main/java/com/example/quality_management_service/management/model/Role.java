@@ -3,7 +3,9 @@ package com.example.quality_management_service.management.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "roles")
@@ -25,6 +27,15 @@ public class Role {
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<User> users = new ArrayList<>();
 
+    // Many-to-Many: Role ↔ Permission
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "role_permissions",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
+    private Set<Permission> permissions = new HashSet<>();
+
     public Role() {}
 
     public Role(String roleName, String description) {
@@ -33,7 +44,6 @@ public class Role {
         this.createdAt = LocalDateTime.now();
     }
 
-    // Getters & Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
@@ -49,7 +59,9 @@ public class Role {
     public List<User> getUsers() { return users; }
     public void setUsers(List<User> users) { this.users = users; }
 
-    // helper methods for bidirectional relationship
+    public Set<Permission> getPermissions() { return permissions; }
+    public void setPermissions(Set<Permission> permissions) { this.permissions = permissions; }
+
     public void addUser(User user) {
         users.add(user);
         user.setRole(this);
@@ -58,5 +70,13 @@ public class Role {
     public void removeUser(User user) {
         users.remove(user);
         user.setRole(null);
+    }
+
+    public void addPermission(Permission permission) {
+        permissions.add(permission);
+    }
+
+    public void removePermission(Permission permission) {
+        permissions.remove(permission);
     }
 }
