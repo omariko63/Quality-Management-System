@@ -2,6 +2,8 @@ package com.example.quality_management_service.controller;
 
 import com.example.quality_management_service.dto.RoleDto;
 import com.example.quality_management_service.service.RoleService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -17,27 +19,47 @@ public class RoleController {
     }
 
     @PostMapping
-    public Map<String, Object> create(@RequestBody RoleDto dto) {
-        return roleService.create(dto);
+    public ResponseEntity<Map<String, Object>> create(@RequestBody RoleDto dto) {
+        Map<String, Object> response = roleService.create(dto);
+        boolean success = (boolean) response.get("success");
+        return ResponseEntity
+                .status(success ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST)
+                .body(response);
     }
 
     @GetMapping
-    public Map<String, Object> findAll() {
-        return roleService.findAll();
+    public ResponseEntity<Map<String, Object>> findAll() {
+        Map<String, Object> response = roleService.findAll();
+        boolean success = (boolean) response.get("success");
+        return ResponseEntity
+                .status(success ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(response);
     }
 
     @GetMapping("/{id}")
-    public Map<String, Object> findById(@PathVariable Integer id) {
-        return roleService.findById(id);
+    public ResponseEntity<Map<String, Object>> findById(@PathVariable Integer id) {
+        Map<String, Object> response = roleService.findById(id);
+        boolean success = (boolean) response.get("success");
+        return ResponseEntity
+                .status(success ? HttpStatus.OK : HttpStatus.NOT_FOUND)
+                .body(response);
     }
 
     @PutMapping("/{id}")
-    public Map<String, Object> update(@PathVariable Integer id, @RequestBody RoleDto dto) {
-        return roleService.update(id, dto);
+    public ResponseEntity<Map<String, Object>> update(@PathVariable Integer id, @RequestBody RoleDto dto) {
+        Map<String, Object> response = roleService.update(id, dto);
+        boolean success = (boolean) response.get("success");
+        return ResponseEntity
+                .status(success ? HttpStatus.OK : HttpStatus.NOT_FOUND)
+                .body(response);
     }
 
     @DeleteMapping("/{id}")
-    public Map<String, Object> delete(@PathVariable Integer id) {
-        return roleService.delete(id);
+    public ResponseEntity<Map<String, Object>> delete(@PathVariable Integer id) {
+        Map<String, Object> response = roleService.delete(id);
+        boolean success = (boolean) response.get("success");
+        return ResponseEntity
+                .status(success ? HttpStatus.OK : HttpStatus.NOT_FOUND)
+                .body(response);
     }
 }
