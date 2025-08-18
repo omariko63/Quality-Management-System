@@ -3,9 +3,10 @@ package com.example.quality_management_service.controller;
 import com.example.quality_management_service.dto.UserDto;
 import com.example.quality_management_service.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -18,27 +19,27 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto createUser(@Valid @RequestBody UserDto dto) {
-        return userService.createUser(dto);
+    public ResponseEntity<Map<String, Object>> createUser(@Valid @RequestBody UserDto dto) {
+        return ResponseEntity.ok(userService.createUser(dto));
     }
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<Map<String, Object>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable Integer id) {
-        return userService.getUserById(id);
+    public ResponseEntity<Map<String, Object>> getUserById(@PathVariable Integer id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @PutMapping("/{id}")
-    public UserDto updateUser(@PathVariable Integer id,@Valid @RequestBody UserDto dto) {
-        return userService.updateUser(id, dto);
+    public ResponseEntity<Map<String, Object>> updateUser(@PathVariable Integer id, @Valid @RequestBody UserDto dto) {
+        return ResponseEntity.ok(userService.updateUser(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Integer id) {
-        userService.deleteUser(id);
+    public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable Integer id) {
+        return ResponseEntity.ok(userService.deleteUser(id));
     }
 }
