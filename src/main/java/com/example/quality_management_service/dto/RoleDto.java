@@ -9,4 +9,10 @@ public record RoleDto(
         String description,
         LocalDateTime createdAt,
         Set<Integer> permissionIds
-) {}
+) {
+    // Non-canonical constructor
+    public RoleDto(Integer id, String roleName, String description) {
+        this(id, roleName, description, LocalDateTime.now(), Set.of());
+
+    }
+}
