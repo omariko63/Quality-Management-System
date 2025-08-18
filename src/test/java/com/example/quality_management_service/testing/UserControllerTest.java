@@ -116,8 +116,8 @@ class UserControllerTest {
         user.setPasswordHash("password1");
         user.setRole(role);
         user = userRepository.save(user);
+
         mockMvc.perform(delete("/api/users/" + user.getId()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 }
-

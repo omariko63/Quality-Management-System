@@ -36,8 +36,8 @@ class RoleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.roleName", is("ADMIN")))
-                .andExpect(jsonPath("$.description", is("Administrator role")));
+                .andExpect(jsonPath("$.data.roleName", is("ADMIN")))
+                .andExpect(jsonPath("$.data.description", is("Administrator role")));
     }
 
     @Test
@@ -46,7 +46,7 @@ class RoleControllerTest {
         roleRepository.save(new Role("USER", "User role"));
         mockMvc.perform(get("/api/roles"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$.data", hasSize(2)));
     }
 
     @Test
@@ -54,7 +54,7 @@ class RoleControllerTest {
         Role role = roleRepository.save(new Role("ADMIN", "Administrator role"));
         mockMvc.perform(get("/api/roles/" + role.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.roleName", is("ADMIN")));
+                .andExpect(jsonPath("$.data.roleName", is("ADMIN")));
     }
 
     @Test
@@ -67,15 +67,16 @@ class RoleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.roleName", is("UPDATED")))
-                .andExpect(jsonPath("$.description", is("Updated role")));
+                .andExpect(jsonPath("$.data.roleName", is("UPDATED")))
+                .andExpect(jsonPath("$.data.description", is("Updated role")));
     }
 
     @Test
     void testDeleteRole() throws Exception {
         Role role = roleRepository.save(new Role("ADMIN", "Administrator role"));
         mockMvc.perform(delete("/api/roles/" + role.getId()))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.message", containsString("Role deleted successfully")));
     }
 }
-
