@@ -9,6 +9,7 @@ import com.example.quality_management_service.repository.RoleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,12 +34,18 @@ public class RoleService {
             throw new IllegalStateException("Role already exists");
         }
 
-        Set<Permission> permissions = loadPermissions(dto.permissionIds());
         Role role = roleMapper.toRole(dto);
+
+        if (role.getCreatedAt() == null) {
+            role.setCreatedAt(LocalDateTime.now());
+        }
+
+        Set<Permission> permissions = loadPermissions(dto.permissionIds());
         role.setPermissions(permissions);
 
         return roleMapper.toRoleDto(roleRepository.save(role));
     }
+
 
     @Transactional(readOnly = true)
     public List<RoleDto> findAll() {

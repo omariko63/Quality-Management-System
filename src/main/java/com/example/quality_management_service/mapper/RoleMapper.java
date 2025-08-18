@@ -16,19 +16,6 @@ public class RoleMapper {
         role.setId(dto.id());
         role.setRoleName(dto.roleName());
         role.setDescription(dto.description());
-        role.setCreatedAt(dto.createdAt());
-
-        if (dto.permissionIds() != null) {
-            Set<Permission> permissions = dto.permissionIds().stream()
-                    .map(id -> {
-                        Permission permission = new Permission();
-                        permission.setId(id);
-                        return permission;
-                    })
-                    .collect(Collectors.toSet());
-            role.setPermissions(permissions);
-        }
-
         return role;
     }
 
