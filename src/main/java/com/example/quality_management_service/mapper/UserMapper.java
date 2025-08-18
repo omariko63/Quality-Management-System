@@ -1,37 +1,18 @@
 package com.example.quality_management_service.mapper;
 
-import com.example.quality_management_service.dto.RoleDto;
 import com.example.quality_management_service.dto.UserDto;
-import com.example.quality_management_service.model.Role;
 import com.example.quality_management_service.model.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
-public class UserMapper {
+@Mapper(componentModel = "spring", uses = {RoleMapper.class})
+public interface UserMapper {
+    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    public static UserDto toDto(User user) {
-        RoleDto roleDto = null;
-        if (user.getRole() != null) {
-            roleDto = new RoleDto(
-                user.getRole().getId(),
-                user.getRole().getRoleName(),
-                user.getRole().getDescription()
-            );
-        }
-        return new UserDto(
-            user.getId(),
-            user.getUsername(),
-            user.getEmail(),
-            null,
-            roleDto
-        );
-    }
+    @Mapping(target = "password", ignore = true)
+    UserDto toDto(User user);
 
-    public static User toEntity(UserDto dto, Role role, String hashedPassword) {
-        User user = new User();
-        user.setId(dto.id());
-        user.setUsername(dto.username());
-        user.setEmail(dto.email());
-        user.setPasswordHash(hashedPassword);
-        user.setRole(role);
-        return user;
-    }
+    @Mapping(target = "passwordHash", source = "password")
+    User toEntity(UserDto dto);
 }

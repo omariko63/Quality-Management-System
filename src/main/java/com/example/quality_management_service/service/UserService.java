@@ -6,6 +6,7 @@ import com.example.quality_management_service.model.Role;
 import com.example.quality_management_service.model.User;
 import com.example.quality_management_service.repository.RoleRepository;
 import com.example.quality_management_service.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,35 +18,38 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+    @Autowired
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.userMapper = userMapper;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     public UserDto createUser(UserDto dto) {
         Role role = null;
-        if (dto.role() != null && dto.role().id() != null) {
-            role = roleRepository.findById(dto.role().id())
+        if (dto.getRole() != null && dto.getRole().getId() != null) {
+            role = roleRepository.findById(dto.getRole().getId())
                 .orElseThrow(() -> new RuntimeException("Role not found"));
         }
-        String hashedPassword = passwordEncoder.encode(dto.password());
-        User user = UserMapper.toEntity(dto, role, hashedPassword);
-
-        return UserMapper.toDto(userRepository.save(user));
+        User user = userMapper.toEntity(dto);
+        user.setRole(role);
+        user.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
+        return userMapper.toDto(userRepository.save(user));
     }
 
     public List<UserDto> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(UserMapper::toDto)
+                .map(userMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     public UserDto getUserById(Integer id) {
         return userRepository.findById(id)
-                .map(UserMapper::toDto)
+                .map(userMapper::toDto)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
@@ -53,19 +57,19 @@ public class UserService {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Role role = roleRepository.findById(dto.role().id())
+        Role role = roleRepository.findById(dto.getRole().getId())
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
-        existingUser.setUsername(dto.username());
-        existingUser.setEmail(dto.email());
+        existingUser.setUsername(dto.getUsername());
+        existingUser.setEmail(dto.getEmail());
 
-        if (dto.password() != null && !dto.password().isEmpty()) {
-            existingUser.setPasswordHash(passwordEncoder.encode(dto.password()));
+        if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+            existingUser.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
         }
 
         existingUser.setRole(role);
 
-        return UserMapper.toDto(userRepository.save(existingUser));
+        return userMapper.toDto(userRepository.save(existingUser));
     }
 
     public void deleteUser(Integer id) {

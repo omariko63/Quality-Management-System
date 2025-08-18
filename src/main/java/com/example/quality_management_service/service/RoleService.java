@@ -30,7 +30,7 @@ public class RoleService {
     }
 
     public RoleDto create(RoleDto dto) {
-        if (roleRepository.existsByRoleName(dto.roleName())) {
+        if (roleRepository.existsByRoleName(dto.getRoleName())) {
             throw new IllegalStateException("Role already exists");
         }
 
@@ -40,7 +40,7 @@ public class RoleService {
             role.setCreatedAt(LocalDateTime.now());
         }
 
-        Set<Permission> permissions = loadPermissions(dto.permissionIds());
+        Set<Permission> permissions = loadPermissions(dto.getPermissionIds());
         role.setPermissions(permissions);
 
         return roleMapper.toRoleDto(roleRepository.save(role));
@@ -65,14 +65,14 @@ public class RoleService {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Role not found"));
 
-        if (dto.roleName() != null) {
-            role.setRoleName(dto.roleName());
+        if (dto.getRoleName() != null) {
+            role.setRoleName(dto.getRoleName());
         }
-        if (dto.description() != null) {
-            role.setDescription(dto.description());
+        if (dto.getDescription() != null) {
+            role.setDescription(dto.getDescription());
         }
-        if (dto.permissionIds() != null) {
-            Set<Permission> permissions = loadPermissions(dto.permissionIds());
+        if (dto.getPermissionIds() != null) {
+            Set<Permission> permissions = loadPermissions(dto.getPermissionIds());
             role.setPermissions(permissions);
         }
 
