@@ -26,9 +26,11 @@ public class UserService {
     }
 
     public UserDto createUser(UserDto dto) {
-        Role role = roleRepository.findById(dto.role().id())
+        Role role = null;
+        if (dto.role() != null && dto.role().id() != null) {
+            role = roleRepository.findById(dto.role().id())
                 .orElseThrow(() -> new RuntimeException("Role not found"));
-
+        }
         String hashedPassword = passwordEncoder.encode(dto.password());
         User user = UserMapper.toEntity(dto, role, hashedPassword);
 

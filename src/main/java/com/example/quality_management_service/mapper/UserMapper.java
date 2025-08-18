@@ -10,15 +10,18 @@ public class UserMapper {
     public static UserDto toDto(User user) {
         RoleDto roleDto = null;
         if (user.getRole() != null) {
-            roleDto = new RoleDto(user.getId(), user.getUsername(),roleDto.roleName());
+            roleDto = new RoleDto(
+                user.getRole().getId(),
+                user.getRole().getRoleName(),
+                user.getRole().getDescription()
+            );
         }
-
         return new UserDto(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                null,
-                roleDto
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            null,
+            roleDto
         );
     }
 
