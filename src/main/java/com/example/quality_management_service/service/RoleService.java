@@ -29,61 +29,117 @@ public class RoleService {
         this.roleMapper = roleMapper;
     }
 
-    public RoleDto create(RoleDto dto) {
-        if (roleRepository.existsByRoleName(dto.getRoleName())) {
-            throw new IllegalStateException("Role already exists");
-        }
+    public Map<String, Object> create(RoleDto dto) {
+        try {
+            if (roleRepository.existsByRoleName(dto.getRoleName())) {
+                throw new IllegalStateException("Role already exists");
+            }
 
-        Role role = roleMapper.toRole(dto);
+            Role role = roleMapper.toRole(dto);
+            if (role.getCreatedAt() == null) {
+                role.setCreatedAt(LocalDateTime.now());
+            }
 
-        if (role.getCreatedAt() == null) {
-            role.setCreatedAt(LocalDateTime.now());
-        }
-
-        Set<Permission> permissions = loadPermissions(dto.getPermissionIds());
-        role.setPermissions(permissions);
-
-        return roleMapper.toRoleDto(roleRepository.save(role));
-    }
-
-
-    @Transactional(readOnly = true)
-    public List<RoleDto> findAll() {
-        return roleRepository.findAll().stream()
-                .map(roleMapper::toRoleDto)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public RoleDto findById(Integer id) {
-        Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Role not found"));
-        return roleMapper.toRoleDto(role);
-    }
-
-    public RoleDto update(Integer id, RoleDto dto) {
-        Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Role not found"));
-
-        if (dto.getRoleName() != null) {
-            role.setRoleName(dto.getRoleName());
-        }
-        if (dto.getDescription() != null) {
-            role.setDescription(dto.getDescription());
-        }
-        if (dto.getPermissionIds() != null) {
             Set<Permission> permissions = loadPermissions(dto.getPermissionIds());
             role.setPermissions(permissions);
-        }
 
-        return roleMapper.toRoleDto(roleRepository.save(role));
+            Role saved = roleRepository.save(role);
+
+            return Map.of(
+                    "success", true,
+                    "message", "Role created successfully",
+                    "data", roleMapper.toRoleDto(saved)
+            );
+        } catch (IllegalStateException e) {
+            return Map.of("success", false, "message", e.getMessage());
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Unexpected error: " + e.getMessage());
+        }
     }
 
-    public void delete(Integer id) {
-        if (!roleRepository.existsById(id)) {
-            throw new NoSuchElementException("Role not found");
+    @Transactional(readOnly = true)
+    public Map<String, Object> findAll() {
+        try {
+            List<RoleDto> roles = roleRepository.findAll().stream()
+                    .map(roleMapper::toRoleDto)
+                    .toList();
+
+            return Map.of(
+                    "success", true,
+                    "message", "Roles fetched successfully",
+                    "count", roles.size(),
+                    "data", roles
+            );
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Unexpected error: " + e.getMessage());
         }
-        roleRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> findById(Integer id) {
+        try {
+            Role role = roleRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("Role not found"));
+
+            return Map.of(
+                    "success", true,
+                    "message", "Role fetched successfully",
+                    "data", roleMapper.toRoleDto(role)
+            );
+        } catch (NoSuchElementException e) {
+            return Map.of("success", false, "message", e.getMessage());
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Unexpected error: " + e.getMessage());
+        }
+    }
+
+    public Map<String, Object> update(Integer id, RoleDto dto) {
+        try {
+            Role role = roleRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("Role not found"));
+
+            if (dto.getRoleName() != null) {
+                role.setRoleName(dto.getRoleName());
+            }
+            if (dto.getDescription() != null) {
+                role.setDescription(dto.getDescription());
+            }
+            if (dto.getPermissionIds()!= null) {
+                Set<Permission> permissions = loadPermissions(dto.getPermissionIds());
+                role.setPermissions(permissions);
+            }
+
+            Role updated = roleRepository.save(role);
+
+            return Map.of(
+                    "success", true,
+                    "message", "Role updated successfully",
+                    "data", roleMapper.toRoleDto(updated)
+            );
+        } catch (NoSuchElementException e) {
+            return Map.of("success", false, "message", e.getMessage());
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Unexpected error: " + e.getMessage());
+        }
+    }
+
+    public Map<String, Object> delete(Integer id) {
+        try {
+            if (!roleRepository.existsById(id)) {
+                throw new NoSuchElementException("Role not found");
+            }
+
+            roleRepository.deleteById(id);
+
+            return Map.of(
+                    "success", true,
+                    "message", "Role deleted successfully"
+            );
+        } catch (NoSuchElementException e) {
+            return Map.of("success", false, "message", e.getMessage());
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Unexpected error: " + e.getMessage());
+        }
     }
 
     private Set<Permission> loadPermissions(Set<Integer> ids) {
