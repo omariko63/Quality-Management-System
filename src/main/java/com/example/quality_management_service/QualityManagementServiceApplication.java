@@ -8,6 +8,7 @@ public class QualityManagementServiceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(QualityManagementServiceApplication.class, args);
+		System.out.println("Application Compiled!!!");
 	}
 
 }
