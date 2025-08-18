@@ -4,6 +4,7 @@ import com.example.quality_management_service.dto.RoleDto;
 import com.example.quality_management_service.mapper.RoleMapper;
 import com.example.quality_management_service.model.Permission;
 import com.example.quality_management_service.model.Role;
+import com.example.quality_management_service.repository.PermissionRepository;
 import com.example.quality_management_service.repository.RoleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
