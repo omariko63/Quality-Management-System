@@ -1,7 +1,7 @@
 package com.example.quality_management_service.testing;
 
-import com.example.quality_management_service.model.Role;
-import com.example.quality_management_service.repository.RoleRepository;
+import com.example.quality_management_service.management.model.Role;
+import com.example.quality_management_service.management.repository.RoleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

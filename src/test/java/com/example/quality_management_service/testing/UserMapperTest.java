@@ -1,10 +1,10 @@
 package com.example.quality_management_service.testing;
 
-import com.example.quality_management_service.dto.RoleDto;
-import com.example.quality_management_service.dto.UserDto;
-import com.example.quality_management_service.model.Role;
-import com.example.quality_management_service.model.User;
-import com.example.quality_management_service.mapper.UserMapper;
+import com.example.quality_management_service.management.dto.RoleDto;
+import com.example.quality_management_service.management.dto.UserDto;
+import com.example.quality_management_service.management.model.Role;
+import com.example.quality_management_service.management.model.User;
+import com.example.quality_management_service.management.mapper.UserMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,9 +1,9 @@
 package com.example.quality_management_service.testing;
 
-import com.example.quality_management_service.dto.RoleDto;
-import com.example.quality_management_service.model.Permission;
-import com.example.quality_management_service.model.Role;
-import com.example.quality_management_service.mapper.RoleMapper;
+import com.example.quality_management_service.management.dto.RoleDto;
+import com.example.quality_management_service.management.model.Permission;
+import com.example.quality_management_service.management.model.Role;
+import com.example.quality_management_service.management.mapper.RoleMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
