@@ -31,6 +31,11 @@ public class RoleService {
 
     public Map<String, Object> create(RoleDto dto) {
         try {
+
+            if (dto.getRoleName() == null || dto.getRoleName().trim().isEmpty()) {
+                throw new IllegalArgumentException("Role name is required");
+            }
+
             if (roleRepository.existsByRoleName(dto.getRoleName())) {
                 throw new IllegalStateException("Role already exists");
             }
@@ -50,7 +55,7 @@ public class RoleService {
                     "message", "Role created successfully",
                     "data", roleMapper.toRoleDto(saved)
             );
-        } catch (IllegalStateException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             return Map.of("success", false, "message", e.getMessage());
         } catch (Exception e) {
             return Map.of("success", false, "message", "Unexpected error: " + e.getMessage());
@@ -98,6 +103,11 @@ public class RoleService {
             Role role = roleRepository.findById(id)
                     .orElseThrow(() -> new NoSuchElementException("Role not found"));
 
+
+            if (dto.getRoleName() != null && dto.getRoleName().trim().isEmpty()) {
+                throw new IllegalArgumentException("Role name cannot be empty");
+            }
+
             if (dto.getRoleName() != null) {
                 role.setRoleName(dto.getRoleName());
             }
@@ -116,7 +126,7 @@ public class RoleService {
                     "message", "Role updated successfully",
                     "data", roleMapper.toRoleDto(updated)
             );
-        } catch (NoSuchElementException e) {
+        } catch (IllegalArgumentException | NoSuchElementException e) {
             return Map.of("success", false, "message", e.getMessage());
         } catch (Exception e) {
             return Map.of("success", false, "message", "Unexpected error: " + e.getMessage());
@@ -155,3 +165,4 @@ public class RoleService {
         return new HashSet<>(found);
     }
 }
+
