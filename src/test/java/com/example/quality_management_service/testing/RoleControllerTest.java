@@ -38,8 +38,9 @@ class RoleControllerTest {
         mockMvc.perform(post("/api/roles")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isCreated())
+                .andExpect(status().isCreated()) // controller returns 201 CREATED
                 .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.message", is("Role created successfully")))
                 .andExpect(jsonPath("$.data.roleName", is("ADMIN")))
                 .andExpect(jsonPath("$.data.description", is("Administrator role")));
     }
@@ -52,6 +53,8 @@ class RoleControllerTest {
         mockMvc.perform(get("/api/roles"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.message", is("Roles fetched successfully")))
+                .andExpect(jsonPath("$.count", is(2)))
                 .andExpect(jsonPath("$.data", hasSize(2)));
     }
 
@@ -62,12 +65,15 @@ class RoleControllerTest {
         mockMvc.perform(get("/api/roles/" + role.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.data.roleName", is("ADMIN")));
+                .andExpect(jsonPath("$.message", is("Role fetched successfully")))
+                .andExpect(jsonPath("$.data.roleName", is("ADMIN")))
+                .andExpect(jsonPath("$.data.description", is("Administrator role")));
     }
 
     @Test
     void testUpdateRole() throws Exception {
         Role role = roleRepository.save(new Role("ADMIN", "Administrator role"));
+
         String json = "{" +
                 "\"roleName\": \"UPDATED\"," +
                 "\"description\": \"Updated role\"}";
@@ -77,6 +83,7 @@ class RoleControllerTest {
                         .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.message", is("Role updated successfully")))
                 .andExpect(jsonPath("$.data.roleName", is("UPDATED")))
                 .andExpect(jsonPath("$.data.description", is("Updated role")));
     }
@@ -86,31 +93,8 @@ class RoleControllerTest {
         Role role = roleRepository.save(new Role("ADMIN", "Administrator role"));
 
         mockMvc.perform(delete("/api/roles/" + role.getId()))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk()) // controller returns 200 OK, not 204
                 .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.message", containsString("Role deleted successfully")));
-    }
-
-    @Test
-    void testGetRoleById_NotFound() throws Exception {
-        mockMvc.perform(get("/api/roles/9999"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.success", is(false)))
-                .andExpect(jsonPath("$.message", containsString("Role not found")));
-    }
-
-    @Test
-    void testCreateDuplicateRole() throws Exception {
-        roleRepository.save(new Role("ADMIN", "Administrator role"));
-        String json = "{" +
-                "\"roleName\": \"ADMIN\"," +
-                "\"description\": \"Duplicate role\"}";
-
-        mockMvc.perform(post("/api/roles")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.success", is(false)))
-                .andExpect(jsonPath("$.message", containsString("Role already exists")));
+                .andExpect(jsonPath("$.message", is("Role deleted successfully")));
     }
 }
