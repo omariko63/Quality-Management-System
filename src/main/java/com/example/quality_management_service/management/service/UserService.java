@@ -89,9 +89,9 @@ public class UserService {
 
     public UserDto validateUser(String username, String password) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+                .orElseThrow(() -> new NoSuchElementException("Invalid username or password"));
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-            throw(new IllegalArgumentException("Invalid Password"));
+            throw(new IllegalArgumentException("Invalid username or password"));
         }
         return userMapper.toDto(user);
     }

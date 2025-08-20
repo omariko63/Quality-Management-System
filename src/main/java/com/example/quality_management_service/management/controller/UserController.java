@@ -1,6 +1,7 @@
 package com.example.quality_management_service.management.controller;
 
 import com.example.quality_management_service.management.dto.UserDto;
+import com.example.quality_management_service.management.dto.ValidationRequestDTO;
 import com.example.quality_management_service.management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +46,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
     @PostMapping("/validate")
-    public ResponseEntity<UserDto> validateUser(@RequestBody String username, @RequestBody String password) {
-        return ResponseEntity.ok(userService.validateUser(username, password));
+    public ResponseEntity<UserDto> validateUser(@RequestBody ValidationRequestDTO request ) {
+        return ResponseEntity.ok(userService.validateUser(request.username(), request.password()));
     }
 }

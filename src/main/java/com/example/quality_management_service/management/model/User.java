@@ -23,7 +23,7 @@ public class User {
     private String passwordHash;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id", nullable = false)
+    @JoinColumn(name = "role_id")
     private Role role;
 
     @Column(name = "created_at", nullable = false, updatable = false)
