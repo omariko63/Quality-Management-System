@@ -10,53 +10,55 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
 
 @Component
-public class JwtTokenVerifier extends GenericFilter {
-    @Value("${jwt.secret}")
-    private String secretkey;
+public class JwtTokenVerifier extends OncePerRequestFilter {
+    private final String secretkey;
+
+    public JwtTokenVerifier(@Value("${jwt.secret}") String secretkey) {
+        this.secretkey = secretkey;
+    }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
-
-        HttpServletRequest httpReq = (HttpServletRequest) request;
+    protected void doFilterInternal(HttpServletRequest httpReq, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
         String authHeader = httpReq.getHeader("Authorization");
-
+        System.out.println("[JwtTokenVerifier] Authorization header: " + authHeader);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            chain.doFilter(request, response);
+            System.out.println("[JwtTokenVerifier] No Bearer token found, skipping JWT verification.");
+            chain.doFilter(httpReq, response);
             return;
         }
-
         String token = authHeader.replace("Bearer ", "");
-
+        System.out.println("[JwtTokenVerifier] Token: " + token);
         try {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(secretkey.getBytes())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-
+            System.out.println("[JwtTokenVerifier] Claims: " + claims);
             String username = claims.getSubject();
             String role = (String) claims.get("role");
-
+            String springRole = "ROLE_" + role;
+            System.out.println("[JwtTokenVerifier] Username: " + username + ", Role: " + role + ", SpringRole: " + springRole);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     username,
                     null,
-                    Collections.singleton(() -> role)
+                    Collections.singleton(() -> springRole)
             );
-
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpReq));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
+            System.out.println("[JwtTokenVerifier] Authentication set in SecurityContext.");
         } catch (Exception e) {
-            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+            System.out.println("[JwtTokenVerifier] Exception: " + e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
             return;
         }
-
-        chain.doFilter(request, response);
+        chain.doFilter(httpReq, response);
     }
 }

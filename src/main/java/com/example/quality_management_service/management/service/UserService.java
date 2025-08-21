@@ -37,32 +37,38 @@ public class UserService {
                     .orElseThrow(() -> new NoSuchElementException("Role not found"));
         }
 
+        System.out.println("[UserService] Creating user with role: " + (role != null ? role.getRoleName() : "null"));
         User user = userMapper.toEntity(dto);
         user.setRole(role);
         user.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
-
+        System.out.println("[UserService] Saving user: " + user.getUsername() + ", role: " + (role != null ? role.getRoleName() : "null"));
         User saved = userRepository.save(user);
+        System.out.println("[UserService] User saved with ID: " + saved.getId());
         return userMapper.toDto(saved);
     }
 
     public List<UserDto> getAllUsers() {
+        System.out.println("[UserService] Getting all users");
         return userRepository.findAll().stream()
                 .map(userMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     public UserDto getUserById(Integer id) {
+        System.out.println("[UserService] Getting user by ID: " + id);
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
         return userMapper.toDto(user);
     }
 
     public UserDto updateUser(Integer id, UserDto dto) {
+        System.out.println("[UserService] Updating user ID: " + id);
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
-
+        System.out.println("[UserService] Existing user role: " + (existingUser.getRole() != null ? existingUser.getRole().getRoleName() : "null"));
         Role role = roleRepository.findById(dto.getRole().getId())
                 .orElseThrow(() -> new NoSuchElementException("Role not found"));
+        System.out.println("[UserService] New role for update: " + role.getRoleName());
 
         if (dto.getUsername() != null) {
             existingUser.setUsername(dto.getUsername());
@@ -90,6 +96,7 @@ public class UserService {
     public UserDto validateUser(String username, String password) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new NoSuchElementException("Invalid username or password"));
+        System.out.println("[UserService] validateUser found user: " + user.getUsername() + ", role: " + (user.getRole() != null ? user.getRole().getRoleName() : "null"));
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             throw(new IllegalArgumentException("Invalid username or password"));
         }

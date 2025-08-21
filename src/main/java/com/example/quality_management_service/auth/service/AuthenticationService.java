@@ -45,8 +45,9 @@ public class AuthenticationService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
         System.out.println("creating tokens!");
-        String accessToken = jwtUtil.generateAccessToken(user.getUsername());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getUsername());
+        String roleName = user.getRole() != null ? user.getRole().getRoleName() : "";
+        String accessToken = jwtUtil.generateAccessToken(user.getUsername(), roleName);
+        String refreshToken = jwtUtil.generateRefreshToken(user.getUsername(), roleName);
 
         return new Token(accessToken, refreshToken);
         //return null;

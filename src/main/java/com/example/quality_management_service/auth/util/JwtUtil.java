@@ -23,22 +23,26 @@ public class JwtUtil {
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
-    private String generateToken(String username, long expiration) {
+    private String generateToken(String username, String role, long expiration) {
         return Jwts.builder()
                 .setSubject(username)
+                .claim("role", role)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-    public String generateAccessToken(String username){
-        return generateToken(username, accessTokenExpiration);
+    public String generateAccessToken(String username, String role){
+        return generateToken(username, role, accessTokenExpiration);
     }
-    public String generateRefreshToken(String username) {
-       return generateToken(username, refreshTokenExpiration);
+    public String generateRefreshToken(String username, String role) {
+       return generateToken(username, role, refreshTokenExpiration);
     }
     public String extractUsername(String token){
         return extractClaim(token,Claims::getSubject);
+    }
+    public String extractRole(String token) {
+        return extractAllClaims(token).get("role", String.class);
     }
     public boolean validateToken(String token){
         return !isTokenExpired(token);
