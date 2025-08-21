@@ -16,9 +16,9 @@ public class RoleInitializer {
     CommandLineRunner initRoles(RoleRepository roleRepository, PermissionRepository permissionRepository) {
         return args -> {
             List<Role> defaultRoles = List.of(
-                    new Role("SUPER_ADMIN", "Full system access"),
+                    new Role("Super_Admin", "Full system access"),
                     new Role("QA", "Quality Assurance role with limited permissions"),
-                    new Role("QA_SUPERVISOR", "Supervisory role for QA team")
+                    new Role("QA_SuperVisor", "Supervisory role for QA team")
             );
 
             List<String> superAdminPermissionNames = List.of(
