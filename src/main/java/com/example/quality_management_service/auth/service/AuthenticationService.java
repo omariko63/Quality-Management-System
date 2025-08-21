@@ -1,7 +1,6 @@
 package com.example.quality_management_service.auth.service;
 
 import com.example.quality_management_service.auth.dto.Token;
-import com.example.quality_management_service.auth.dto.UserValidationResponse;
 import com.example.quality_management_service.auth.util.JwtUtil;
 import com.example.quality_management_service.management.dto.UserDto;
 import org.springframework.http.*;
@@ -9,10 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.net.http.HttpClient;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -38,10 +34,10 @@ public class AuthenticationService {
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(request, headers);
         System.out.println("mapped");
         System.out.println("here!");
-        UserValidationResponse user = restTemplate.postForObject(
+        UserDto user = restTemplate.postForObject(
                 validationUrl,
                 requestEntity,
-                UserValidationResponse.class
+                UserDto.class
         );
         System.out.println("response sent and received");
         System.out.println(user);
@@ -49,8 +45,8 @@ public class AuthenticationService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
         System.out.println("creating tokens!");
-        String accessToken = jwtUtil.generateAccessToken(user.username());
-        String refreshToken = jwtUtil.generateRefreshToken(user.username());
+        String accessToken = jwtUtil.generateAccessToken(user.getUsername());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getUsername());
 
         return new Token(accessToken, refreshToken);
         //return null;
