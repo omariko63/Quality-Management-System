@@ -49,5 +49,5 @@ public class PermissionService {
             return true;
         }
         return false;
-    }
+}
 }
