@@ -1,6 +1,9 @@
 package com.example.quality_management_service.management.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,6 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
+@Data
+@NoArgsConstructor
 @Table(name = "roles")
 public class Role {
 
@@ -36,31 +41,11 @@ public class Role {
     )
     private Set<Permission> permissions = new HashSet<>();
 
-    public Role() {}
-
     public Role(String roleName, String description) {
         this.roleName = roleName;
         this.description = description;
         this.createdAt = LocalDateTime.now();
     }
-
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-
-    public String getRoleName() { return roleName; }
-    public void setRoleName(String roleName) { this.roleName = roleName; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public List<User> getUsers() { return users; }
-    public void setUsers(List<User> users) { this.users = users; }
-
-    public Set<Permission> getPermissions() { return permissions; }
-    public void setPermissions(Set<Permission> permissions) { this.permissions = permissions; }
 
     public void addUser(User user) {
         users.add(user);

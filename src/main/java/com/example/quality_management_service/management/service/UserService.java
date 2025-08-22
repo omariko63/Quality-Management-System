@@ -1,13 +1,12 @@
 package com.example.quality_management_service.management.service;
 
-import com.example.quality_management_service.auth.model.PasswordResetToken;
-import com.example.quality_management_service.auth.repository.PasswordResetTokenRepository;
 import com.example.quality_management_service.management.dto.UserDto;
 import com.example.quality_management_service.management.mapper.UserMapper;
 import com.example.quality_management_service.management.model.Role;
 import com.example.quality_management_service.management.model.User;
 import com.example.quality_management_service.management.repository.RoleRepository;
 import com.example.quality_management_service.management.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,22 +18,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final PasswordResetTokenRepository resetTokenRepository;
-
-    @Autowired
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper,PasswordResetTokenRepository resetTokenRepository) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.userMapper = userMapper;
-        this.resetTokenRepository = resetTokenRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder();
-    }
 
     public UserDto createUser(UserDto dto) {
         Role role = null;
@@ -107,35 +97,6 @@ public class UserService {
             throw(new IllegalArgumentException("Invalid username or password"));
         }
         return userMapper.toDto(user);
-    }
-
-    public String generateResetToken(String email) {
-        User user = (User) userRepository.findByEmail(email)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
-
-        resetTokenRepository.deleteByUser(user); // invalidate old tokens
-
-        String token = UUID.randomUUID().toString();
-        PasswordResetToken resetToken = new PasswordResetToken(
-                token, user, LocalDateTime.now().plusMinutes(15));
-        resetTokenRepository.save(resetToken);
-
-        return token;
-    }
-
-    public void resetPassword(String token, String newPassword) {
-        PasswordResetToken resetToken = resetTokenRepository.findByToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
-
-        if (resetToken.isExpired()) {
-            throw new IllegalArgumentException("Token expired");
-        }
-
-        User user = resetToken.getUser();
-        user.setPasswordHash(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-
-        resetTokenRepository.delete(resetToken); // one-time use
     }
 
 }

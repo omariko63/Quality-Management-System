@@ -6,6 +6,7 @@ import com.example.quality_management_service.management.model.Permission;
 import com.example.quality_management_service.management.model.Role;
 import com.example.quality_management_service.management.repository.PermissionRepository;
 import com.example.quality_management_service.management.repository.RoleRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,19 +16,13 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class RoleService {
 
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
     private final RoleMapper roleMapper;
 
-    public RoleService(RoleRepository roleRepository,
-                       PermissionRepository permissionRepository,
-                       RoleMapper roleMapper) {
-        this.roleRepository = roleRepository;
-        this.permissionRepository = permissionRepository;
-        this.roleMapper = roleMapper;
-    }
 
     public Map<String, Object> create(RoleDto dto) {
         try {

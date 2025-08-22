@@ -4,21 +4,18 @@ import com.example.quality_management_service.management.dto.PermissionDTO;
 import com.example.quality_management_service.management.mapper.PermissionMapper;
 import com.example.quality_management_service.management.model.Permission;
 import com.example.quality_management_service.management.repository.PermissionRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PermissionService {
 
     private final PermissionRepository permissionRepository;
     private final PermissionMapper permissionMapper;
-
-    public PermissionService(PermissionRepository permissionRepository, PermissionMapper permissionMapper) {
-        this.permissionRepository = permissionRepository;
-        this.permissionMapper = permissionMapper;
-    }
 
     public List<PermissionDTO> getAllPermissions() {
         return permissionMapper.toDTOList(permissionRepository.findAll());
