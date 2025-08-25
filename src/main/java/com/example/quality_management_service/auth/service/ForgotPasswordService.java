@@ -38,19 +38,19 @@ public class ForgotPasswordService {
         MailBody mailBody = MailBody.builder()
                 .to(email)
                 .subject("OTP for Forgot Password request")
-                .text("Your OTP for resetting password is: " + otp + "\nThis OTP is valid for 70 seconds.")
+                .text("Your OTP for resetting password is: " + otp + "\nThis OTP is valid for 15 minutes.")
                 .build();
 
         ForgotPassword fp = ForgotPassword.builder()
                 .otp(otp)
-                .expirationTime(new Date(System.currentTimeMillis() + 70 * 1000))
+                .expirationTime(new Date(System.currentTimeMillis() + 15 * 60 * 1000))
                 .verified(false)
                 .user(user)
                 .build();
 
         forgotPasswordRepository.findByUser(user).ifPresentOrElse(existing -> {
             existing.setOtp(otp);
-            existing.setExpirationTime(new Date(System.currentTimeMillis() + 70 * 1000));
+            existing.setExpirationTime(new Date(System.currentTimeMillis() + 15 * 60 * 1000));
             existing.setVerified(false);
             forgotPasswordRepository.save(existing);
         }, () -> forgotPasswordRepository.save(fp));
