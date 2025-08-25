@@ -1,5 +1,6 @@
 package com.example.quality_management_service.auth.filter;
 
+import com.example.quality_management_service.auth.repository.BlacklistedTokenRepository;
 import com.example.quality_management_service.auth.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,9 +20,11 @@ import java.util.Collections;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final BlacklistedTokenRepository blacklistedTokenRepository;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, BlacklistedTokenRepository blacklistedTokenRepository) {
         this.jwtUtil = jwtUtil;
+        this.blacklistedTokenRepository = blacklistedTokenRepository;
     }
 
     @Override
@@ -37,6 +40,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Authorization: Bearer <token>
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
+            // Blacklist check
+            if (blacklistedTokenRepository.findByToken(jwt).isPresent()) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\":\"please login\"}");
+                return;
+            }
             try {
                 username = jwtUtil.extractUsername(jwt);
             } catch (Exception e) {

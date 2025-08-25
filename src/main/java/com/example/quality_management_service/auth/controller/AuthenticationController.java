@@ -25,6 +25,9 @@ public class AuthenticationController {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    @Autowired
+    private com.example.quality_management_service.auth.repository.BlacklistedTokenRepository blacklistedTokenRepository;
+
     public AuthenticationController(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
@@ -47,21 +50,27 @@ public class AuthenticationController {
         return ResponseEntity.ok(token);
     }
 
-    // Logout endpoint (using Authorization header instead of body)
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.badRequest().body("Missing or invalid Authorization header");
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorization,
+                                    @RequestBody(required = false) Map<String, String> body) {
+        String accessToken = null;
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            accessToken = authorization.substring(7);
         }
-
-        String token = authHeader.substring(7);
-
-        if (!InMemoryTokenStore.isTokenValid(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is already invalid or expired");
+        String refreshToken = body != null ? body.get("refresh_token") : null;
+        if (accessToken != null) {
+            com.example.quality_management_service.auth.model.BlacklistedToken blacklistedAccess = new com.example.quality_management_service.auth.model.BlacklistedToken();
+            blacklistedAccess.setToken(accessToken);
+            blacklistedAccess.setExpirationDate(jwtUtil.getExpirationDate(accessToken));
+            blacklistedTokenRepository.save(blacklistedAccess);
         }
-
-        InMemoryTokenStore.invalidateToken(token);
-        return ResponseEntity.ok("Logged out successfully");
+        if (refreshToken != null) {
+            com.example.quality_management_service.auth.model.BlacklistedToken blacklistedRefresh = new com.example.quality_management_service.auth.model.BlacklistedToken();
+            blacklistedRefresh.setToken(refreshToken);
+            blacklistedRefresh.setExpirationDate(jwtUtil.getExpirationDate(refreshToken));
+            blacklistedTokenRepository.save(blacklistedRefresh);
+        }
+        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
     }
 
     // Refresh token endpoint
