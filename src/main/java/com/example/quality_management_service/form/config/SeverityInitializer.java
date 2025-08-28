@@ -6,6 +6,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.math.BigDecimal;
+
 @Configuration
 public class SeverityInitializer {
 
@@ -13,9 +15,9 @@ public class SeverityInitializer {
     public CommandLineRunner initializeSeverities(SeverityRepository repository) {
         return args -> {
             if (repository.count() == 0) {
-                repository.save(new Severity(1L, "Low", "Low severity level", 0.2));
-                repository.save(new Severity(2L, "Medium", "Medium severity level", 0.5));
-                repository.save(new Severity(3L, "High", "High severity level", 0.8));
+                repository.save(new Severity("Low", "Low severity level", new BigDecimal("0.20")));
+                repository.save(new Severity("Medium", "Medium severity level", new BigDecimal("0.50")));
+                repository.save(new Severity("High", "High severity level", new BigDecimal("0.80")));
             }
         };
     }
