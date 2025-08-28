@@ -8,9 +8,10 @@ import lombok.Data;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Severity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
