@@ -4,51 +4,45 @@ import java.math.BigDecimal;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "success_criteria")
+@Table(name = "success_criteria",
+       uniqueConstraints = @UniqueConstraint(name="uq_form_severity", columnNames = {"evaluation_form_id","severity_id"}))
 public class SuccessCriteria {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
 
-	@Column(name = "evaluation_form_id")
-	private Long evaluationFormId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(name = "severity_id")
-	private Long severityId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "evaluation_form_id", nullable = false)
+    private EvaluationForm form;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "method")
-	private Method method;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "severity_id", nullable = false)
+    private Severity severity;
 
-	@Column(name = "threshold", precision = 19, scale = 2)
-	private BigDecimal threshold;
+    @Column(nullable = false, precision = 6, scale = 2)
+    private BigDecimal threshold;
 
-	public enum Method {
-		PERCENTAGE,
-		COUNT
-	}
+    // Getters and setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-	// Getters and setters
-	public Long getId() { return id; }
-	public void setId(Long id) { this.id = id; }
+    public EvaluationForm getForm() { return form; }
+    public void setForm(EvaluationForm form) { this.form = form; }
 
-	public Long getEvaluationFormId() { return evaluationFormId; }
-	public void setEvaluationFormId(Long evaluationFormId) { this.evaluationFormId = evaluationFormId; }
+    public Severity getSeverity() { return severity; }
+    public void setSeverity(Severity severity) { this.severity = severity; }
 
-	public Long getSeverityId() { return severityId; }
-	public void setSeverityId(Long severityId) { this.severityId = severityId; }
-
-	public Method getMethod() { return method; }
-	public void setMethod(Method method) { this.method = method; }
-
-	public BigDecimal getThreshold() { return threshold; }
-	public void setThreshold(BigDecimal threshold) { this.threshold = threshold; }
+    public BigDecimal getThreshold() { return threshold; }
+    public void setThreshold(BigDecimal threshold) { this.threshold = threshold; }
 }

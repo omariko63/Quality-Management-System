@@ -1,59 +1,84 @@
 package com.example.quality_management_service.form.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.example.quality_management_service.form.enums.AnswerType;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "factor")
 public class Factor {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
 
-	@Column(name = "category_id")
-	private Long categoryId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(name = "question_text", columnDefinition = "TEXT")
-	private String questionText;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
-	@Column(name = "weight", precision = 2, scale = 2)
-	private BigDecimal weight;
+    @Column(name = "question_text", nullable = false, length = 200)
+    private String questionText;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "answer_type")
-	private AnswerType answerType;
+    @Column(nullable = false, precision = 5, scale = 2)
+    private BigDecimal weight;
 
-	@Column(name = "notes", columnDefinition = "TEXT")
-	private String notes;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "answer_type", nullable = false)
+    private AnswerType answerType = AnswerType.YES_NO;
 
-	public enum AnswerType {
-		TEXT,
-		NUMBER,
-	}
+    @Column(length = 200)
+    private String notes;
 
-	public Long getId() { return id; }
-	public void setId(Long id) { this.id = id; }
+    @Column(name = "pass_answer", length = 10)
+    private String passAnswer; // Only for YES/NO type
 
-	public Long getCategoryId() { return categoryId; }
-	public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
+    @Column(name = "order_index", nullable = false)
+    private Integer orderIndex = 0;
 
-	public String getQuestionText() { return questionText; }
-	public void setQuestionText(String questionText) { this.questionText = questionText; }
+    @OneToMany(mappedBy = "factor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AnswerOption> answerOptions = new ArrayList<>();
 
-	public BigDecimal getWeight() { return weight; }
-	public void setWeight(BigDecimal weight) { this.weight = weight; }
+    // Getters and setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-	public AnswerType getAnswerType() { return answerType; }
-	public void setAnswerType(AnswerType answerType) { this.answerType = answerType; }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
 
-	public String getNotes() { return notes; }
-	public void setNotes(String notes) { this.notes = notes; }
+    public String getQuestionText() { return questionText; }
+    public void setQuestionText(String questionText) { this.questionText = questionText; }
+
+    public BigDecimal getWeight() { return weight; }
+    public void setWeight(BigDecimal weight) { this.weight = weight; }
+
+    public AnswerType getAnswerType() { return answerType; }
+    public void setAnswerType(AnswerType answerType) { this.answerType = answerType; }
+
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+
+    public String getPassAnswer() { return passAnswer; }
+    public void setPassAnswer(String passAnswer) { this.passAnswer = passAnswer; }
+
+    public Integer getOrderIndex() { return orderIndex; }
+    public void setOrderIndex(Integer orderIndex) { this.orderIndex = orderIndex; }
+
+    public List<AnswerOption> getAnswerOptions() { return answerOptions; }
+    public void setAnswerOptions(List<AnswerOption> answerOptions) { this.answerOptions = answerOptions; }
 }
