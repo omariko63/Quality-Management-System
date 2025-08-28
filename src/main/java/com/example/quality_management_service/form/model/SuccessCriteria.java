@@ -24,7 +24,7 @@ public class SuccessCriteria {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "evaluation_form_id", nullable = false)
-    private EvaluationForm form;
+    private EvaluationForm evaluationForm;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "severity_id", nullable = false)
@@ -37,8 +37,8 @@ public class SuccessCriteria {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public EvaluationForm getForm() { return form; }
-    public void setForm(EvaluationForm form) { this.form = form; }
+    public EvaluationForm getEvaluationForm() { return evaluationForm; }
+    public void setEvaluationForm(EvaluationForm evaluationForm) { this.evaluationForm = evaluationForm; }
 
     public Severity getSeverity() { return severity; }
     public void setSeverity(Severity severity) { this.severity = severity; }

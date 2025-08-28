@@ -34,7 +34,7 @@ public class Severity {
     private List<Category> categories = new ArrayList<>();
 
     @OneToMany(mappedBy = "severity")
-    private List<SuccessCriteria> successCriteria = new ArrayList<>();
+    private List<SuccessCriteria> successCriteriaList = new ArrayList<>();
 
     // Getters and setters
     public Long getId() { return id; }
@@ -52,6 +52,6 @@ public class Severity {
     public List<Category> getCategories() { return categories; }
     public void setCategories(List<Category> categories) { this.categories = categories; }
 
-    public List<SuccessCriteria> getSuccessCriteria() { return successCriteria; }
-    public void setSuccessCriteria(List<SuccessCriteria> successCriteria) { this.successCriteria = successCriteria; }
+    public List<SuccessCriteria> getSuccessCriteriaList() { return successCriteriaList; }
+    public void setSuccessCriteriaList(List<SuccessCriteria> successCriteriaList) { this.successCriteriaList = successCriteriaList; }
 }
