@@ -1,24 +1,27 @@
 package com.example.quality_management_service.form.service;
 
-import com.example.quality_management_service.form.model.Severity;
+import com.example.quality_management_service.form.dto.SeverityDto;
+import com.example.quality_management_service.form.mapper.SeverityMapper;
 import com.example.quality_management_service.form.repository.SeverityRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
 public class SeverityService {
-    private final SeverityRepository severityRepository;
 
-    public SeverityService(SeverityRepository severityRepository) {
-        this.severityRepository = severityRepository;
+    private final SeverityRepository repository;
+    private final SeverityMapper mapper;
+
+    public SeverityService(SeverityRepository repository, SeverityMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
     }
 
-    public List<Severity> getAll() {
-        return severityRepository.findAll();
-    }
-
-    public Severity getById(Long id) {
-        return severityRepository.findById(id).orElseThrow();
+    public List<SeverityDto> getAllSeverities() {
+        return repository.findAll()
+                .stream()
+                .map(mapper::toDto)
+                .toList();
     }
 }
-
