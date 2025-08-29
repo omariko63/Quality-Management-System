@@ -91,46 +91,17 @@ public class EvaluationFormService {
     public Optional<EvaluationFormDTO> updateEvaluationForm(Long id, EvaluationFormDTO dto) {
         return evaluationFormRepository.findById(id)
                 .map(form -> {
-                    form.setNameEn(dto.nameEn());
-                    form.setNameAr(dto.nameAr());
-                    form.setCalculationMethod(dto.calculationMethod());
-                    form.setStatus(dto.status());
+                    // MapStruct will update only non-null fields
+                    evaluationFormMapper.updateEntityFromDto(dto, form);
+
                     form.setUpdatedAt(Instant.now());
-
-                    // Update project if provided
-                    if (dto.projectId() != null) {
-                        Project project = projectRepository.findById(dto.projectId())
-                                .orElseThrow(() -> new RuntimeException("Project not found"));
-                        form.setProject(project);
-                    }
-
-                    // Update supervisor if provided
-                    if (dto.supervisorId() != null) {
-                        User supervisor = userRepository.findById(dto.supervisorId())
-                                .orElseThrow(() -> new RuntimeException("Supervisor not found"));
-                        form.setSupervisor(supervisor);
-                    }
-
-                    // Update categories
-                    if (dto.categoryIds() != null) {
-                        List<Category> categories = categoryRepository.findAllById(dto.categoryIds());
-                        form.getCategories().clear();
-                        form.getCategories().addAll(categories);
-                        categories.forEach(c -> c.setForm(form));
-                    }
-
-                    // Update success criteria
-                    if (dto.successCriteriaIds() != null) {
-                        List<SuccessCriteria> criteria = successCriteriaRepository.findAllById(dto.successCriteriaIds());
-                        form.getSuccessCriteria().clear();
-                        form.getSuccessCriteria().addAll(criteria);
-                        criteria.forEach(c -> c.setEvaluationForm(form));
-                    }
 
                     EvaluationForm updated = evaluationFormRepository.save(form);
                     return evaluationFormMapper.toDTO(updated);
                 });
     }
+
+
 
     // DELETE
     @Transactional

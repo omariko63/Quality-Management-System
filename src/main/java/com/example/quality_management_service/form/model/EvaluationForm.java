@@ -37,12 +37,12 @@ public class EvaluationForm {
     @Column(name = "name_en", length = 30, unique = true)
     private String nameEn;
 
-    @Column(name = "name_ar", length = 30, unique = true)
+    @Column(name = "name_ar", length = 30, columnDefinition = "NVARCHAR(30)", unique = true)
     private String nameAr;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "calculation_method", nullable = false)
-    private CalculationMethod calculationMethod = CalculationMethod.SEVERITY_PERCENTAGE;
+    private CalculationMethod calculationMethod = CalculationMethod.PERCENTAGE;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -55,7 +55,7 @@ public class EvaluationForm {
     private Instant updatedAt = Instant.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "supervisor", referencedColumnName = "id")
+    @JoinColumn(name = "supervisor_id", referencedColumnName = "id", nullable = false)
     private com.example.quality_management_service.management.model.User supervisor;
 
     @OneToMany(mappedBy = "form", cascade = CascadeType.ALL, orphanRemoval = true)

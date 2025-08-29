@@ -4,9 +4,7 @@ import com.example.quality_management_service.form.dto.EvaluationFormDTO;
 import com.example.quality_management_service.form.model.Category;
 import com.example.quality_management_service.form.model.EvaluationForm;
 import com.example.quality_management_service.form.model.SuccessCriteria;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +23,9 @@ public interface EvaluationFormMapper {
     @Mapping(target = "categories", ignore = true)
     @Mapping(target = "successCriteria", ignore = true)
     EvaluationForm toEntity(EvaluationFormDTO dto);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEntityFromDto(EvaluationFormDTO dto, @MappingTarget EvaluationForm entity);
 
     // Convert list of Category objects to their IDs
     @Named("mapCategoryIds")
