@@ -2,10 +2,7 @@ package com.example.quality_management_service.form.service;
 
 import com.example.quality_management_service.form.dto.EvaluationFormDTO;
 import com.example.quality_management_service.form.mapper.EvaluationFormMapper;
-import com.example.quality_management_service.form.model.Category;
-import com.example.quality_management_service.form.model.EvaluationForm;
-import com.example.quality_management_service.form.model.Project;
-import com.example.quality_management_service.form.model.SuccessCriteria;
+import com.example.quality_management_service.form.model.*;
 import com.example.quality_management_service.form.repository.CategoryRepository;
 import com.example.quality_management_service.form.repository.EvaluationFormRepository;
 import com.example.quality_management_service.form.repository.ProjectRepository;
@@ -16,9 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,8 +52,15 @@ public class EvaluationFormService {
         // Optionally set categories
         if (dto.categoryIds() != null) {
             List<Category> categories = categoryRepository.findAllById(dto.categoryIds());
+            if(!validateSeverityWeight(categories)) {
+                throw new IllegalArgumentException("Severity weights not valid");
+            }
             form.setCategories(categories);
-            categories.forEach(c -> c.setForm(form));
+            for(Category category : categories) {
+                category.setForm(form);
+            }
+            //form.setCategories(categories);
+            //categories.forEach(c -> c.setForm(form));
         }
 
         // Optionally set success criteria
@@ -112,5 +116,38 @@ public class EvaluationFormService {
                     return true;
                 })
                 .orElse(false);
+    }
+
+
+    private boolean validateCategoryWeight( Category category){
+        BigDecimal categoryWeight = category.calculateWeight();
+        return categoryWeight.compareTo(BigDecimal.valueOf(100)) == 0;
+    }
+    private boolean validateSeverityWeight(List<Category> categories){
+        Map<Severity, List<Category>> severityGroups = createSeverityMap(categories);
+        for(Map.Entry<Severity, List<Category>> entry : severityGroups.entrySet()){
+            Severity severity = entry.getKey();
+            List<Category> categoryList = entry.getValue();
+
+            BigDecimal totalWeight = BigDecimal.ZERO;
+            for(Category category : categoryList){
+                totalWeight =  totalWeight.add(category.calculateWeight());
+            }
+            if(totalWeight.compareTo(BigDecimal.valueOf(100)) != 0){
+                return false;
+            }
+        }
+        return true;
+    }
+    private Map<Severity, List<Category>> createSeverityMap(List<Category> categories){
+        Map<Severity, List<Category>> severityGroups = new HashMap<>();
+        for(Category category : categories){
+            Severity severity = category.getSeverity();
+            if(!severityGroups.containsKey(severity)){
+                severityGroups.put(severity, new ArrayList<>());
+            }
+            severityGroups.get(severity).add(category);
+        }
+        return severityGroups;
     }
 }

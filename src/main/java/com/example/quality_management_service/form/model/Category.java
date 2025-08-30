@@ -65,4 +65,14 @@ public class Category {
 
     public List<Factor> getFactors() { return factors; }
     public void setFactors(List<Factor> factors) { this.factors = factors; }
+
+    public BigDecimal calculateWeight(){
+        BigDecimal total = BigDecimal.ZERO;
+        for(Factor factor : factors){
+            if(factor.getWeight() != null) {
+                total = total.add(factor.getWeight());
+            }
+        }
+        return total;
+    }
 }

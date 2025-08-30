@@ -97,4 +97,8 @@ public class EvaluationForm {
 
     public List<SuccessCriteria> getSuccessCriteria() { return successCriteria; }
     public void setSuccessCriteria(List<SuccessCriteria> successCriteria) { this.successCriteria = successCriteria; }
+
+    public void addCategory(Category category) {
+        this.categories.add(category);
+    }
 }
