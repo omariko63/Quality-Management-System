@@ -3,6 +3,7 @@ package com.example.quality_management_service.form.service;
 import com.example.quality_management_service.form.dto.SeverityDto;
 import com.example.quality_management_service.form.mapper.SeverityMapper;
 import com.example.quality_management_service.form.repository.SeverityRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class SeverityService {
         this.mapper = mapper;
     }
 
+    @PreAuthorize("hasAnyRole('QA','QA_SUPERVISOR')")
     public List<SeverityDto> getAllSeverities() {
         return repository.findAll()
                 .stream()

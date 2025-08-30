@@ -5,6 +5,7 @@ import com.example.quality_management_service.form.service.AnswerOptionService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,11 +20,13 @@ public class AnswerOptionController {
         this.service = service;
     }
 
+    @PreAuthorize("hasRole('QA_SUPERVISOR')")
     @GetMapping
     public ResponseEntity<List<AnswerOptionDto>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
+    @PreAuthorize("hasRole('QA_SUPERVISOR')")
     @GetMapping("/{id}")
     public ResponseEntity<AnswerOptionDto> getById(@PathVariable Long id) {
         try {
@@ -33,12 +36,14 @@ public class AnswerOptionController {
         }
     }
 
+    @PreAuthorize("hasRole('QA_SUPERVISOR')")
     @PostMapping
     public ResponseEntity<AnswerOptionDto> create(@RequestBody AnswerOptionDto dto) {
         AnswerOptionDto created = service.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
+    @PreAuthorize("hasRole('QA_SUPERVISOR')")
     @PutMapping("/{id}")
     public ResponseEntity<AnswerOptionDto> update(@PathVariable Long id, @RequestBody AnswerOptionDto dto) {
         try {

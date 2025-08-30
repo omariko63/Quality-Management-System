@@ -16,9 +16,9 @@ public class RoleInitializer {
     CommandLineRunner initRoles(RoleRepository roleRepository, PermissionRepository permissionRepository) {
         return args -> {
             List<Role> defaultRoles = List.of(
-                    new Role("Super_Admin", "Full system access"),
+                    new Role("SUPER_ADMIN", "Full system access"),
                     new Role("QA", "Quality Assurance role with limited permissions"),
-                    new Role("QA_SuperVisor", "Supervisory role for QA team")
+                    new Role("QA_SUPERVISOR", "Supervisory role for QA team")
             );
 
             List<String> superAdminPermissionNames = List.of(
@@ -28,21 +28,52 @@ public class RoleInitializer {
                 "UPDATE_USER",
                 "DELETE_USER"
             );
+            List<String> qaSupervisorPermissionNames = List.of(
+                "CREATE_USER",
+                "GET_ALL_USERS",
+                "GET_USER_BY_ID",
+                "UPDATE_USER",
+                "DELETE_USER"
+            );
+            List<String> qaPermissionNames = List.of(
+                "GET_ALL_USERS",
+                "GET_USER_BY_ID"
+            );
+
+            // Ensure permissions exist
+            for (String permName : superAdminPermissionNames) {
+                if (!permissionRepository.findByName(permName).isPresent()) {
+                    permissionRepository.save(new com.example.quality_management_service.management.model.Permission(permName, permName + " permission"));
+                }
+            }
+            for (String permName : qaSupervisorPermissionNames) {
+                if (!permissionRepository.findByName(permName).isPresent()) {
+                    permissionRepository.save(new com.example.quality_management_service.management.model.Permission(permName, permName + " permission"));
+                }
+            }
+            for (String permName : qaPermissionNames) {
+                if (!permissionRepository.findByName(permName).isPresent()) {
+                    permissionRepository.save(new com.example.quality_management_service.management.model.Permission(permName, permName + " permission"));
+                }
+            }
 
             for (Role role : defaultRoles) {
-                if (!roleRepository.existsByRoleName(role.getRoleName())) {
-                    if (role.getRoleName().equals("SUPER_ADMIN")) {
-                        for (String permName : superAdminPermissionNames) {
-                            permissionRepository.findByName(permName).ifPresent(role.getPermissions()::add);
-                        }
-                    }
-                    roleRepository.save(role);
-                } else if (role.getRoleName().equals("SUPER_ADMIN")) {
-                    Role superAdmin = roleRepository.findByRoleName("SUPER_ADMIN").get();
+                Role savedRole = roleRepository.findByRoleName(role.getRoleName()).orElseGet(() -> roleRepository.save(role));
+                if (role.getRoleName().equals("SUPER_ADMIN")) {
                     for (String permName : superAdminPermissionNames) {
-                        permissionRepository.findByName(permName).ifPresent(superAdmin.getPermissions()::add);
+                        permissionRepository.findByName(permName).ifPresent(savedRole.getPermissions()::add);
                     }
-                    roleRepository.save(superAdmin);
+                    roleRepository.save(savedRole);
+                } else if (role.getRoleName().equals("QA_SUPERVISOR")) {
+                    for (String permName : qaSupervisorPermissionNames) {
+                        permissionRepository.findByName(permName).ifPresent(savedRole.getPermissions()::add);
+                    }
+                    roleRepository.save(savedRole);
+                } else if (role.getRoleName().equals("QA")) {
+                    for (String permName : qaPermissionNames) {
+                        permissionRepository.findByName(permName).ifPresent(savedRole.getPermissions()::add);
+                    }
+                    roleRepository.save(savedRole);
                 }
             }
         };

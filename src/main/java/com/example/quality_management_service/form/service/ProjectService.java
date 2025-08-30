@@ -5,6 +5,7 @@ import com.example.quality_management_service.form.mapper.ProjectMapper;
 import com.example.quality_management_service.form.model.Project;
 import com.example.quality_management_service.form.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
 
+    @PreAuthorize("hasRole('QA_SUPERVISOR')")
     @Transactional
     public ProjectDTO createProject(ProjectDTO projectDTO) {
         Project project = projectMapper.toEntity(projectDTO);
@@ -26,12 +28,14 @@ public class ProjectService {
         return projectMapper.toDTO(savedProject);
     }
 
+    @PreAuthorize("hasAnyRole('QA','QA_SUPERVISOR')")
     @Transactional(readOnly = true)
     public Optional<ProjectDTO> getProject(Long id) {
         return projectRepository.findById(id)
                 .map(projectMapper::toDTO);
     }
 
+    @PreAuthorize("hasAnyRole('QA','QA_SUPERVISOR')")
     @Transactional(readOnly = true)
     public List<ProjectDTO> getAllProjects() {
         return projectRepository.findAll()
@@ -40,6 +44,7 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasRole('QA_SUPERVISOR')")
     @Transactional
     public Optional<ProjectDTO> updateProject(Long id, ProjectDTO projectDTO) {
         return projectRepository.findById(id)
@@ -51,13 +56,13 @@ public class ProjectService {
                 });
     }
 
+    @PreAuthorize("hasRole('QA_SUPERVISOR')")
     @Transactional
     public boolean deleteProject(Long id) {
-        return projectRepository.findById(id)
-                .map(project -> {
-                    projectRepository.delete(project);
-                    return true;
-                })
-                .orElse(false);
+        if (projectRepository.existsById(id)) {
+            projectRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
