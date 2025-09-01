@@ -61,10 +61,6 @@ public class CategoryService {
             category.setWeight(updatedData.weight());
         }
 
-        if (updatedData.orderIndex() != null) {
-            category.setOrderIndex(updatedData.orderIndex());
-        }
-
         categoryRepository.save(category);
         return categoryMapper.toDto(category);
     }

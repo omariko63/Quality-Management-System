@@ -131,7 +131,7 @@ public class EvaluationFormService {
 
             BigDecimal totalWeight = BigDecimal.ZERO;
             for(Category category : categoryList){
-                totalWeight =  totalWeight.add(category.calculateWeight());
+                totalWeight =  totalWeight.add(category.getWeight());
             }
             if(totalWeight.compareTo(BigDecimal.valueOf(100)) != 0){
                 return false;
