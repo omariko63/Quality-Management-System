@@ -5,6 +5,7 @@ import com.example.quality_management_service.form.mapper.AnswerOptionMapper;
 import com.example.quality_management_service.form.model.AnswerOption;
 import com.example.quality_management_service.form.model.Factor;
 import com.example.quality_management_service.form.repository.AnswerOptionRepository;
+import com.example.quality_management_service.form.repository.FactorRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +16,12 @@ public class AnswerOptionService {
 
     private final AnswerOptionRepository repository;
     private final AnswerOptionMapper mapper;
+    private final FactorRepository factorRepository;
 
-    public AnswerOptionService(AnswerOptionRepository repository, AnswerOptionMapper mapper) {
+    public AnswerOptionService(AnswerOptionRepository repository, AnswerOptionMapper mapper, FactorRepository factorRepository) {
         this.repository = repository;
         this.mapper = mapper;
+        this.factorRepository = factorRepository;
     }
 
     public List<AnswerOptionDto> getAll() {
@@ -36,13 +39,11 @@ public class AnswerOptionService {
 
     public AnswerOptionDto create(AnswerOptionDto dto) {
         AnswerOption entity = mapper.toEntity(dto);
-
         if (dto.factorId() != null) {
-            Factor factor = new Factor();
-            factor.setId(dto.factorId());
+            Factor factor = factorRepository.findById(dto.factorId())
+                .orElseThrow(() -> new EntityNotFoundException("Factor not found"));
             entity.setFactor(factor);
         }
-
         AnswerOption saved = repository.save(entity);
         return mapper.toDto(saved);
     }

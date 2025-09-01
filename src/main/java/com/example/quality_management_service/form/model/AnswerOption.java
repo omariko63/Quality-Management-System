@@ -11,11 +11,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "answer_option",
-       uniqueConstraints = @UniqueConstraint(name = "uq_factor_value", columnNames = {"factor_id","value"}))
+@Table(name = "answer_option")
 public class AnswerOption {
 
     @Id
