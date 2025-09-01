@@ -41,19 +41,28 @@ public class FactorService {
     }
 
     public FactorDto getFactorById(Long id) {
-        return factorRepository.findById(id)
-                .map(factorMapper::toDto)
-                .orElse(null);
+        Factor factor = factorRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Factor not found"));
+        return factorMapper.toDto(factor);
     }
 
     public FactorDto updateFactor(Long id, FactorDto factorDto) {
-        return factorRepository.findById(id)
-                .map(existing -> {
-                    Factor updated = factorMapper.toEntity(factorDto);
-                    updated.setId(id);
-                    return factorMapper.toDto(factorRepository.save(updated));
-                })
-                .orElse(null);
+        Factor existing = factorRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Factor not found"));
+
+        if (factorDto.categoryId() != null) {
+            Category category = categoryRepository.findById(factorDto.categoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+            existing.setCategory(category);
+        }
+        if (factorDto.questionText() != null) existing.setQuestionText(factorDto.questionText());
+        if (factorDto.weight() != null) existing.setWeight(factorDto.weight());
+        if (factorDto.answerType() != null) existing.setAnswerType(factorDto.answerType());
+        if (factorDto.notes() != null) existing.setNotes(factorDto.notes());
+        if (factorDto.passAnswer() != null) existing.setPassAnswer(factorDto.passAnswer());
+
+        Factor saved = factorRepository.save(existing);
+        return factorMapper.toDto(saved);
     }
 
     public void deleteFactor(Long id) {
