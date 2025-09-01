@@ -8,8 +8,10 @@ import org.mapstruct.*;
 public interface AnswerOptionMapper {
 
     @Mapping(source = "factor.id", target = "factorId")
+    @Mapping(source = "passing", target = "isPassing")
     AnswerOptionDto toDto(AnswerOption entity);
 
     @Mapping(source = "factorId", target = "factor.id")
+    @Mapping(source = "isPassing", target = "passing")
     AnswerOption toEntity(AnswerOptionDto dto);
 }
