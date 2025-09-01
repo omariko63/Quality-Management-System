@@ -48,9 +48,6 @@ public class Factor {
     @Column(name = "pass_answer", length = 10)
     private String passAnswer; // Only for YES/NO type
 
-    @Column(name = "order_index", nullable = false)
-    private Integer orderIndex = 0;
-
     @OneToMany(mappedBy = "factor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnswerOption> answerOptions = new ArrayList<>();
 
@@ -75,9 +72,6 @@ public class Factor {
 
     public String getPassAnswer() { return passAnswer; }
     public void setPassAnswer(String passAnswer) { this.passAnswer = passAnswer; }
-
-    public Integer getOrderIndex() { return orderIndex; }
-    public void setOrderIndex(Integer orderIndex) { this.orderIndex = orderIndex; }
 
     public List<AnswerOption> getAnswerOptions() { return answerOptions; }
     public void setAnswerOptions(List<AnswerOption> answerOptions) { this.answerOptions = answerOptions; }

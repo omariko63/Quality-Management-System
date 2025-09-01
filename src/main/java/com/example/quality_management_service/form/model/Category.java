@@ -38,9 +38,6 @@ public class Category {
     @JoinColumn(name = "severity_id", nullable = false)
     private Severity severity;
 
-    @Column(name = "order_index", nullable = false)
-    private Integer orderIndex = 0;
-
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Factor> factors = new ArrayList<>();
 
@@ -59,9 +56,6 @@ public class Category {
 
     public Severity getSeverity() { return severity; }
     public void setSeverity(Severity severity) { this.severity = severity; }
-
-    public Integer getOrderIndex() { return orderIndex; }
-    public void setOrderIndex(Integer orderIndex) { this.orderIndex = orderIndex; }
 
     public List<Factor> getFactors() { return factors; }
     public void setFactors(List<Factor> factors) { this.factors = factors; }

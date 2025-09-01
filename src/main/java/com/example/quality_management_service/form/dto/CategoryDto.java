@@ -12,6 +12,5 @@ public record CategoryDto(
     @NotNull @Size(max = 30) String title,
     @NotNull BigDecimal weight,
     @NotNull Long severityId,
-    Integer orderIndex,
     List<FactorDto> factors
 ) {}
