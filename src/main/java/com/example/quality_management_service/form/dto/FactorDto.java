@@ -9,5 +9,6 @@ public record FactorDto(
         String questionText,
         BigDecimal weight,
         AnswerType answerType,
-        String notes
+        String notes,
+        String passAnswer
 ){}

@@ -61,6 +61,7 @@ public class CategoryService {
             category.setWeight(updatedData.weight());
         }
 
+
         categoryRepository.save(category);
         return categoryMapper.toDto(category);
     }
