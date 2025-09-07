@@ -1,9 +1,14 @@
 package com.example.quality_management_service.form.mapper;
 
+import com.example.quality_management_service.form.dto.EvaluationFormBulkCreateDto;
 import com.example.quality_management_service.form.dto.EvaluationFormDTO;
+import com.example.quality_management_service.form.dto.CategoryDto;
+import com.example.quality_management_service.form.dto.SuccessCriteriaDto;
 import com.example.quality_management_service.form.model.Category;
 import com.example.quality_management_service.form.model.EvaluationForm;
+import com.example.quality_management_service.form.model.Project;
 import com.example.quality_management_service.form.model.SuccessCriteria;
+import com.example.quality_management_service.management.model.User;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -39,5 +44,33 @@ public interface EvaluationFormMapper {
     default List<Long> mapSuccessCriteriaIds(List<SuccessCriteria> criteria) {
         if (criteria == null) return null;
         return criteria.stream().map(SuccessCriteria::getId).collect(Collectors.toList());
+    }
+
+    // Bulk create mapping
+    @Mapping(target = "project", ignore = true)
+    @Mapping(target = "supervisor", ignore = true)
+    @Mapping(target = "categories", expression = "java(mapCategories(dto.categories()))")
+    @Mapping(target = "successCriteria", expression = "java(mapSuccessCriteria(dto.successCriteria()))")
+    EvaluationForm toEntity(EvaluationFormBulkCreateDto dto);
+
+    default List<Category> mapCategories(List<CategoryDto> dtos) {
+        if (dtos == null) return null;
+        return dtos.stream().map(catDto -> {
+            Category cat = new Category();
+            cat.setTitle(catDto.title());
+            cat.setWeight(catDto.weight());
+            // Severity and form will be set in service
+            return cat;
+        }).collect(Collectors.toList());
+    }
+
+    default List<SuccessCriteria> mapSuccessCriteria(List<SuccessCriteriaDto> dtos) {
+        if (dtos == null) return null;
+        return dtos.stream().map(scDto -> {
+            SuccessCriteria sc = new SuccessCriteria();
+            sc.setThreshold(java.math.BigDecimal.valueOf(scDto.threshold()));
+            // Severity and form will be set in service
+            return sc;
+        }).collect(Collectors.toList());
     }
 }

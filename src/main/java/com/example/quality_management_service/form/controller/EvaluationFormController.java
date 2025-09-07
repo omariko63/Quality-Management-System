@@ -1,6 +1,7 @@
 package com.example.quality_management_service.form.controller;
 
 import com.example.quality_management_service.form.dto.EvaluationFormDTO;
+import com.example.quality_management_service.form.dto.FullFormCreateRequest;
 import com.example.quality_management_service.form.service.EvaluationFormService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,13 @@ public class EvaluationFormController {
     public ResponseEntity<EvaluationFormDTO> create(@RequestBody EvaluationFormDTO dto) {
         EvaluationFormDTO created = evaluationFormService.createEvaluationForm(dto);
         return ResponseEntity.ok(created);
+    }
+
+    // CREATE EVERYTHING IN ONE REQUEST
+    @PreAuthorize("hasRole('QA_SUPERVISOR')")
+    @PostMapping("/full-create")
+    public ResponseEntity<?> createFullForm(@RequestBody FullFormCreateRequest request) {
+        return ResponseEntity.ok(evaluationFormService.createFullForm(request));
     }
 
     // READ - by ID

@@ -1,6 +1,6 @@
 package com.example.quality_management_service.form.service;
 
-import com.example.quality_management_service.form.dto.ProjectDTO;
+import com.example.quality_management_service.form.dto.ProjectDto;
 import com.example.quality_management_service.form.mapper.ProjectMapper;
 import com.example.quality_management_service.form.model.Project;
 import com.example.quality_management_service.form.repository.ProjectRepository;
@@ -22,7 +22,7 @@ public class ProjectService {
 
     @PreAuthorize("hasRole('QA_SUPERVISOR')")
     @Transactional
-    public ProjectDTO createProject(ProjectDTO projectDTO) {
+    public ProjectDto createProject(ProjectDto projectDTO) {
         Project project = projectMapper.toEntity(projectDTO);
         Project savedProject = projectRepository.save(project);
         return projectMapper.toDTO(savedProject);
@@ -30,14 +30,14 @@ public class ProjectService {
 
     @PreAuthorize("hasAnyRole('QA','QA_SUPERVISOR')")
     @Transactional(readOnly = true)
-    public Optional<ProjectDTO> getProject(Long id) {
+    public Optional<ProjectDto> getProject(Long id) {
         return projectRepository.findById(id)
                 .map(projectMapper::toDTO);
     }
 
     @PreAuthorize("hasAnyRole('QA','QA_SUPERVISOR')")
     @Transactional(readOnly = true)
-    public List<ProjectDTO> getAllProjects() {
+    public List<ProjectDto> getAllProjects() {
         return projectRepository.findAll()
                 .stream()
                 .map(projectMapper::toDTO)
@@ -46,7 +46,7 @@ public class ProjectService {
 
     @PreAuthorize("hasRole('QA_SUPERVISOR')")
     @Transactional
-    public Optional<ProjectDTO> updateProject(Long id, ProjectDTO projectDTO) {
+    public Optional<ProjectDto> updateProject(Long id, ProjectDto projectDTO) {
         return projectRepository.findById(id)
                 .map(project -> {
                     project.setName(projectDTO.name());

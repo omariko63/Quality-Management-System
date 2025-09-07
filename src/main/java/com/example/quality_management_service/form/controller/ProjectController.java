@@ -1,6 +1,6 @@
 package com.example.quality_management_service.form.controller;
 
-import com.example.quality_management_service.form.dto.ProjectDTO;
+import com.example.quality_management_service.form.dto.ProjectDto;
 import com.example.quality_management_service.form.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,14 +20,14 @@ public class ProjectController {
 
     @PreAuthorize("hasRole('QA_SUPERVISOR')")
     @PostMapping
-    public ResponseEntity<ProjectDTO> createProject(@Valid @RequestBody ProjectDTO projectDTO) {
-        ProjectDTO created = projectService.createProject(projectDTO);
+    public ResponseEntity<ProjectDto> createProject(@Valid @RequestBody ProjectDto projectDTO) {
+        ProjectDto created = projectService.createProject(projectDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PreAuthorize("hasAnyRole('QA','QA_SUPERVISOR')")
     @GetMapping("/{id}")
-    public ResponseEntity<ProjectDTO> getProject(@PathVariable Long id) {
+    public ResponseEntity<ProjectDto> getProject(@PathVariable Long id) {
         return projectService.getProject(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -35,15 +35,15 @@ public class ProjectController {
 
     @PreAuthorize("hasAnyRole('QA','QA_SUPERVISOR')")
     @GetMapping
-    public ResponseEntity<List<ProjectDTO>> getAllProjects() {
-        List<ProjectDTO> projects = projectService.getAllProjects();
+    public ResponseEntity<List<ProjectDto>> getAllProjects() {
+        List<ProjectDto> projects = projectService.getAllProjects();
         return ResponseEntity.ok(projects);
     }
 
     @PreAuthorize("hasRole('QA_SUPERVISOR')")
     @PutMapping("/{id}")
-    public ResponseEntity<ProjectDTO> updateProject(@PathVariable Long id,
-                                                    @Valid @RequestBody ProjectDTO projectDTO) {
+    public ResponseEntity<ProjectDto> updateProject(@PathVariable Long id,
+                                                    @Valid @RequestBody ProjectDto projectDTO) {
         return projectService.updateProject(id, projectDTO)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

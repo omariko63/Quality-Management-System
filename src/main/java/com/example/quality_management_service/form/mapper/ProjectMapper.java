@@ -1,6 +1,6 @@
 package com.example.quality_management_service.form.mapper;
 
-import com.example.quality_management_service.form.dto.ProjectDTO;
+import com.example.quality_management_service.form.dto.ProjectDto;
 import com.example.quality_management_service.form.model.EvaluationForm;
 import com.example.quality_management_service.form.model.Project;
 import org.mapstruct.Mapper;
@@ -17,10 +17,10 @@ public interface ProjectMapper {
     ProjectMapper INSTANCE = Mappers.getMapper(ProjectMapper.class);
 
     @Mapping(source = "evaluationForms", target = "evaluationFormIds", qualifiedByName = "mapEvaluationFormIds")
-    ProjectDTO toDTO(Project project);
+    ProjectDto toDTO(Project project);
 
     @Mapping(target = "evaluationForms", ignore = true)
-    Project toEntity(ProjectDTO projectDTO);
+    Project toEntity(ProjectDto projectDTO);
 
     @Named("mapEvaluationFormIds")
     default List<Long> mapEvaluationFormIds(List<EvaluationForm> evaluationForms) {

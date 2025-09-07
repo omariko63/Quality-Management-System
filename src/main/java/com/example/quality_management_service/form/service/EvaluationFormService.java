@@ -1,6 +1,8 @@
 package com.example.quality_management_service.form.service;
 
 import com.example.quality_management_service.form.dto.EvaluationFormDTO;
+import com.example.quality_management_service.form.dto.FullFormCreateRequest;
+import com.example.quality_management_service.form.dto.EvaluationFormBulkCreateDto;
 import com.example.quality_management_service.form.mapper.EvaluationFormMapper;
 import com.example.quality_management_service.form.model.*;
 import com.example.quality_management_service.form.repository.CategoryRepository;
@@ -18,6 +20,15 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.example.quality_management_service.form.dto.SeverityDto;
+import com.example.quality_management_service.form.dto.CategoryDto;
+import com.example.quality_management_service.form.dto.FactorDto;
+import com.example.quality_management_service.form.dto.AnswerOptionDto;
+import com.example.quality_management_service.form.dto.SuccessCriteriaDto;
+import com.example.quality_management_service.form.repository.SeverityRepository;
+import com.example.quality_management_service.form.repository.FactorRepository;
+import com.example.quality_management_service.form.repository.AnswerOptionRepository;
+
 @Service
 @RequiredArgsConstructor
 public class EvaluationFormService {
@@ -28,6 +39,9 @@ public class EvaluationFormService {
     private final CategoryRepository categoryRepository;
     private final SuccessCriteriaRepository successCriteriaRepository;
     private final EvaluationFormMapper evaluationFormMapper;
+    private final SeverityRepository severityRepository;
+    private final FactorRepository factorRepository;
+    private final AnswerOptionRepository answerOptionRepository;
 
     // CREATE
     @Transactional
@@ -149,5 +163,96 @@ public class EvaluationFormService {
             severityGroups.get(severity).add(category);
         }
         return severityGroups;
+    }
+
+    @Transactional
+    public Map<String, Object> createFullForm(FullFormCreateRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        // 1. Create Project
+        Project project = null;
+        if (request.project != null) {
+            project = new Project();
+            project.setName(request.project.name());
+            project.setDescription(request.project.description());
+            project = projectRepository.save(project);
+            result.put("projectId", project.getId());
+        }
+        // 2. Create Severities
+        List<Long> severityIds = new ArrayList<>();
+        if (request.severities != null) {
+            for (SeverityDto s : request.severities) {
+                Severity severity = new Severity();
+                severity.setName(s.name());
+                severity.setDescription(s.description());
+                severity = severityRepository.save(severity);
+                severityIds.add(severity.getId());
+            }
+            result.put("severityIds", severityIds);
+        }
+        // 3. Create EvaluationForm
+        EvaluationFormBulkCreateDto formDto = request.form;
+        EvaluationForm form = evaluationFormMapper.toEntity(formDto);
+        if (project != null) form.setProject(project);
+        if (formDto.supervisorId() != null) {
+            User supervisor = userRepository.findById(formDto.supervisorId())
+                .orElseThrow(() -> new RuntimeException("Supervisor not found"));
+            form.setSupervisor(supervisor);
+        }
+        form.setCreatedAt(Instant.now());
+        form.setUpdatedAt(Instant.now());
+        // 4. Create Categories from DTOs and add to form
+        List<Long> categoryIds = new ArrayList<>();
+        if (formDto.categories() != null) {
+            for (CategoryDto catDto : formDto.categories()) {
+                Category category = new Category();
+                category.setForm(form); // Set the form reference
+                category.setTitle(catDto.title());
+                category.setWeight(catDto.weight());
+                if (catDto.severityId() != null) {
+                    Severity severity = severityRepository.findById(catDto.severityId())
+                        .orElse(null);
+                    category.setSeverity(severity);
+                }
+                // Handle factors if present
+                if (catDto.factors() != null) {
+                    List<Factor> factors = new ArrayList<>();
+                    for (FactorDto factorDto : catDto.factors()) {
+                        Factor factor = new Factor();
+                        factor.setCategory(category); // Set parent category
+                        factor.setQuestionText(factorDto.questionText());
+                        factor.setWeight(factorDto.weight());
+                        factor.setAnswerType(factorDto.answerType());
+                        factors.add(factor);
+                    }
+                    category.setFactors(factors);
+                }
+                form.getCategories().add(category); // Add to form's categories list
+            }
+        }
+        form = evaluationFormRepository.save(form); // Save form and cascade categories
+        result.put("formId", form.getId());
+        // Collect category IDs
+        for (Category category : form.getCategories()) {
+            categoryIds.add(category.getId());
+        }
+        result.put("categoryIds", categoryIds);
+        // 7. Create SuccessCriteria
+        List<Long> criteriaIds = new ArrayList<>();
+        if (formDto.successCriteria() != null) {
+            for (SuccessCriteriaDto scDto : formDto.successCriteria()) {
+                SuccessCriteria sc = new SuccessCriteria();
+                sc.setEvaluationForm(form);
+                if (scDto.severityId() != null) {
+                    Severity severity = severityRepository.findById(scDto.severityId())
+                        .orElse(null);
+                    sc.setSeverity(severity);
+                }
+                sc.setThreshold(java.math.BigDecimal.valueOf(scDto.threshold()));
+                sc = successCriteriaRepository.save(sc);
+                criteriaIds.add(sc.getId());
+            }
+        }
+        result.put("successCriteriaIds", criteriaIds);
+        return result;
     }
 }

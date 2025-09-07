@@ -8,9 +8,10 @@ import java.util.List;
 
 public record CategoryDto(
     Long id,
-    @NotNull Long formId,
+    Long formId, // removed @NotNull to allow optional for nested creation
     @NotNull @Size(max = 30) String title,
     @NotNull BigDecimal weight,
     @NotNull Long severityId,
-    List<FactorDto> factors
+    List<FactorDto> factors,
+    List<AnswerOptionDto> options
 ) {}

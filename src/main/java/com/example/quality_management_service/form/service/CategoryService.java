@@ -47,6 +47,7 @@ public class CategoryService {
         Severity severity = severityRepository.findById(categoryDto.severityId())
             .orElseThrow(() -> new EntityNotFoundException("Severity not found"));
         category.setSeverity(severity);
+        System.out.println("DEBUG: Before save, category.form=" + category.getForm() + ", form.id=" + (category.getForm() != null ? category.getForm().getId() : null));
         return categoryMapper.toDto(categoryRepository.save(category));
     }
     public CategoryDto updateCategory(Long categoryId, CategoryDto updatedData) {
