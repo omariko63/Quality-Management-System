@@ -4,12 +4,9 @@ import com.example.quality_management_service.management.dto.UserDto;
 import com.example.quality_management_service.management.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring", uses = {RoleMapper.class})
+@Mapper(componentModel = "spring", implementationName = "ManagementUserMapperImpl", uses = {RoleMapper.class})
 public interface UserMapper {
-    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
-
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "role", source = "role")
     UserDto toDto(User user);

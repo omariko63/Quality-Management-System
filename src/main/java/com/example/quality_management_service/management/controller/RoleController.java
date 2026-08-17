@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@RestController
+@RestController("managementRoleController")
 @RequestMapping("/api/roles")
 public class RoleController {
 

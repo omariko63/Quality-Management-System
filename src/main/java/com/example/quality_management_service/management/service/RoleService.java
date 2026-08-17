@@ -5,7 +5,7 @@ import com.example.quality_management_service.management.mapper.RoleMapper;
 import com.example.quality_management_service.management.model.Permission;
 import com.example.quality_management_service.management.model.Role;
 import com.example.quality_management_service.management.repository.PermissionRepository;
-import com.example.quality_management_service.management.repository.RoleRepository;
+import com.example.quality_management_service.management.repository.ManagementRoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
+@Service("managementRoleService")
 @Transactional
 @RequiredArgsConstructor
 public class RoleService {
 
-    private final RoleRepository roleRepository;
+    private final ManagementRoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
     private final RoleMapper roleMapper;
 

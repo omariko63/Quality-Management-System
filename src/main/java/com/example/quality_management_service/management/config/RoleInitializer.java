@@ -1,7 +1,7 @@
 package com.example.quality_management_service.management.config;
 
 import com.example.quality_management_service.management.model.Role;
-import com.example.quality_management_service.management.repository.RoleRepository;
+import com.example.quality_management_service.management.repository.ManagementRoleRepository;
 import com.example.quality_management_service.management.repository.PermissionRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +13,7 @@ import java.util.List;
 public class RoleInitializer {
 
     @Bean
-    CommandLineRunner initRoles(RoleRepository roleRepository, PermissionRepository permissionRepository) {
+    CommandLineRunner initRoles(ManagementRoleRepository roleRepository, PermissionRepository permissionRepository) {
         return args -> {
             List<Role> defaultRoles = List.of(
                     new Role("SUPER_ADMIN", "Full system access"),

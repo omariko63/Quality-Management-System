@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-@RestController
+@RestController("managementPermissionController")
 @RequestMapping("/api/permissions")
 public class PermissionController {
 

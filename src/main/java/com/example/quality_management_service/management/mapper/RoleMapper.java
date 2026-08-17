@@ -6,15 +6,12 @@ import com.example.quality_management_service.management.model.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", implementationName = "ManagementRoleMapperImpl")
 public interface RoleMapper {
-    RoleMapper INSTANCE = Mappers.getMapper(RoleMapper.class);
-
     @Mapping(target = "permissionIds", source = "permissions", qualifiedByName = "mapPermissionIds")
     RoleDto toRoleDto(Role role);
 

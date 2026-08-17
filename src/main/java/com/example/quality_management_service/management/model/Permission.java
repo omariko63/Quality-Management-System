@@ -16,7 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Entity(name = "ManagementPermission")
 @Table(name = "permissions")
 public class Permission {
     @Id

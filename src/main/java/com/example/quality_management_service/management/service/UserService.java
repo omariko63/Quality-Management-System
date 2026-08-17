@@ -4,7 +4,7 @@ import com.example.quality_management_service.management.dto.UserDto;
 import com.example.quality_management_service.management.mapper.UserMapper;
 import com.example.quality_management_service.management.model.Role;
 import com.example.quality_management_service.management.model.User;
-import com.example.quality_management_service.management.repository.RoleRepository;
+import com.example.quality_management_service.management.repository.ManagementRoleRepository;
 import com.example.quality_management_service.management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +17,12 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Service
+@Service("managementUserService")
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final ManagementRoleRepository roleRepository;
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder;
 
