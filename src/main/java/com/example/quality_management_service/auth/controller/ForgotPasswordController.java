@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/forgotPassword")
 @RequiredArgsConstructor
-public class ForgotPasswordController {
+public class  ForgotPasswordController {
 
     private final ForgotPasswordService forgotPasswordService;
 

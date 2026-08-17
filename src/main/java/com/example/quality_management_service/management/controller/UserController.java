@@ -23,31 +23,31 @@ public class UserController {
         this.userService = userService;
     }
 
-  @PreAuthorize("hasRole('SUPER_ADMIN')")
+  @PreAuthorize("hasRole('Super_Admin')")
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto dto) {
         return ResponseEntity.ok(userService.createUser(dto));
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('Super_Admin')")
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('Super_Admin')")
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Integer id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('Super_Admin')")
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable Integer id, @RequestBody UserDto dto) {
         return ResponseEntity.ok(userService.updateUser(id, dto));
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('Super_Admin')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
